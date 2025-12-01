@@ -5,94 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organize Tournament - KrumVerse</title>
     <style>
+        /* ============================================
+           DARK THEME & BASE STYLES
+           ============================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-purple: #667eea;
+            --primary-dark: #764ba2;
+            --dark-bg: #1a1a2e;
+            --card-bg: #28283d;
+            --text-light: #f1f5f9;
+            --text-gray: #bbb;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-purple) 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 0;
+            color: var(--text-light);
         }
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
+
+        /* --- NAVBAR STYLES (MATCHES GAMES/TOURNAMENT PAGES) --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-logo { font-size: 1.8rem; font-weight: bold; color: white; text-decoration: none; }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        /* --- FORM CONTAINER --- */
+        .container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            width: 95%;
+            margin: 40px auto;
             padding: 40px;
-            animation: slideIn 0.5s ease-out;
+            color: var(--text-light);
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
-        .logo {
-            font-size: 32px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
+
         .header h1 {
             font-size: 28px;
-            color: #333;
+            color: var(--primary-purple);
             margin-bottom: 10px;
         }
         .header p {
-            color: #666;
+            color: var(--text-gray);
             font-size: 14px;
         }
+
+        /* --- FORM STYLING --- */
         .form-section {
+            background: #1a1a2e;
+            padding: 25px;
+            border-radius: 10px;
             margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .section-title {
             font-size: 18px;
-            color: #667eea;
+            color: var(--primary-purple);
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-light);
             font-weight: 500;
             font-size: 14px;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #444;
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s ease;
             font-family: inherit;
+            background: #34495e; /* Darker input background */
+            color: var(--text-light);
         }
+
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
+        /* Style select options in dark theme */
+        select option {
+            background: #1a1a2e;
+        }
+
         textarea {
             min-height: 100px;
             resize: vertical;
         }
+
         .button-group {
             display: flex;
             gap: 15px;
             margin-top: 30px;
         }
+        
         button {
             flex: 1;
             padding: 15px;
@@ -103,72 +156,67 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); /* Green for Create/Success */
             color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #666;
-        }
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        .game-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 20px;
         }
         
-        /* NEW: Payment section styling */
-        .payment-section {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
         }
+
+        .btn-secondary {
+            background: #34495e;
+            color: var(--text-light);
+        }
+
         .fee-input-group {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+        
         .fee-input-group input {
             flex: 1;
         }
+
         .currency-symbol {
             font-size: 18px;
             font-weight: bold;
-            color: #667eea;
+            color: #ffc107; /* Gold accent for currency */
         }
+
         .fee-hint {
             font-size: 12px;
             color: #888;
             margin-top: 5px;
         }
+        
+        @media (max-width: 500px) {
+            .button-group {
+                flex-direction: column;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
     </style>
-    <!-- Load API Configuration FIRST -->
-<script src="./config/api.js"></script>
 </head>
 <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-logo">KrumVerse</a>
+        <a class="back-btn" href="tournament.html">← Back to Tournaments</a>
+        <!-- Add the auth container for globalauth.js to inject the profile icon -->
+        <div id="auth-container"></div>
+    </nav>
+
     <div class="container">
         <div class="header">
-            <div class="logo">KrumVerse</div>
-            <h1>Create New Tournament</h1>
+            <h1 style="color: var(--text-light);">Create New Tournament</h1>
             <p>Fill in the details below to organize your esports tournament</p>
-        </div>
-
-        <div id="preSelectedGame" style="display: none;">
-            <p style="color: #666; margin-bottom: 15px;">🎮 Creating tournament for:</p>
-            <div class="game-badge" id="gameBadge"></div>
         </div>
 
         <form id="tournamentForm">
@@ -178,13 +226,14 @@
                 
                 <div class="form-group">
                     <label for="tournamentName">Tournament Name *</label>
-                    <input type="text" id="tournamentName" name="name" required placeholder="e.g., BGMI Winter Championship">
+                    <input type="text" id="tournamentName" name="name" required placeholder="e.g., Valorant Winter Championship">
                 </div>
 
                 <div class="form-group">
                     <label for="gameSelect">Select Game *</label>
-                    <select id="gameSelect" name="game" required>
-                        <option value="">-- Select a Game --</option>
+                    <!-- IMPORTANT: ID must be gameSelect, NAME must be gameId -->
+                    <select id="gameSelect" name="gameId" required>
+                        <option value="">-- Loading Games --</option>
                     </select>
                 </div>
 
@@ -204,24 +253,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="endDate">End Date</label>
-                    <input type="datetime-local" id="endDate" name="endDate">
-                </div>
-
-                <div class="form-group">
                     <label for="maxParticipants">Max Participants *</label>
                     <input type="number" id="maxParticipants" name="maxParticipants" min="2" max="1000" value="16" required>
                 </div>
 
                 <div class="form-group">
                     <label for="prizePool">Prize Pool</label>
-                    <input type="text" id="prizePool" name="prizePool" placeholder="e.g., ₹50,000">
+                    <input type="text" id="prizePool" name="prizePool" placeholder="e.g., ₹50,000 Cash Prize">
                 </div>
 
                 <div class="form-group">
                     <label for="bracket">Bracket Type *</label>
                     <select id="bracket" name="bracket" required>
-                        <option value="">Select Bracket Type</option>
                         <option value="single-elimination">Single Elimination</option>
                         <option value="double-elimination">Double Elimination</option>
                         <option value="round-robin">Round Robin</option>
@@ -229,17 +272,17 @@
                 </div>
             </div>
 
-            <!-- NEW: Payment Section -->
-            <div class="form-section payment-section">
-                <h3 class="section-title">💰 Registration Fee (Optional)</h3>
+            <!-- Registration Fee Section -->
+            <div class="form-section">
+                <h3 class="section-title">Registration Fee</h3>
                 
                 <div class="form-group">
-                    <label for="registrationFee">Entry Fee</label>
+                    <label for="registrationFee">Entry Fee (Set to 0 for FREE)</label>
                     <div class="fee-input-group">
                         <span class="currency-symbol">₹</span>
                         <input type="number" id="registrationFee" name="registrationFee" min="0" step="1" value="0" placeholder="0">
                     </div>
-                    <p class="fee-hint">💡 Set to 0 for free tournaments. Players will need to pay this amount to register.</p>
+                    <p class="fee-hint">Players must pay this amount to register.</p>
                 </div>
             </div>
 
@@ -249,20 +292,20 @@
                 
                 <div class="form-group">
                     <label for="rules">Tournament Rules *</label>
-                    <textarea id="rules" name="rules" required placeholder="Enter tournament rules and regulations..."></textarea>
+                    <textarea id="rules" name="rules" required placeholder="Enter detailed tournament rules and regulations..."></textarea>
                 </div>
             </div>
 
             <div class="button-group">
                 <button type="button" class="btn-secondary" onclick="window.location.href='tournament.html'">Cancel</button>
-                <button type="submit" class="btn-primary">Create Tournament 🏆</button>
+                <button type="submit" class="btn-primary">Create Tournament</button>
             </div>
         </form>
     </div>
 
-    <script src="organize-script.js"></script>
-    <script src="notification.js"></script>
-
-
+    <!-- SCRIPTS -->
+    <script src="globalauth.js"></script> <!-- Load Auth first -->
+    <script src="organize-script.js"></script> <!-- Load Logic last -->
+    <!-- Removed config/api.js to fix Syntax Error -->
 </body>
 </html>

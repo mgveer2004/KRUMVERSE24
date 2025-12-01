@@ -1,18 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+// ✅ CRITICAL FIX: Ensure dotenv loads first for all subsequent imports
+require('dotenv').config(); 
 
 const app = express();
-
+// ... (rest of the server code remains the same)
 // ✅ MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ DATABASE CONNECTION
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/KRUMVERSE24')
-.then(() => console.log('✅ MongoDB Connected'))
+// We prioritize MONGODB_URI because that is what seed.js used!
+const dbURI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/KRUMVERSE24';
+
+console.log('🔌 Connecting to DB...');
+
+mongoose.connect(dbURI)
+.then(() => console.log('✅ MongoDB Connected Successfully'))
 .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // ============================================

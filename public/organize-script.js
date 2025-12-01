@@ -1,13 +1,13 @@
 // ============================================
-// ORGANIZE TOURNAMENT SCRIPT - COMPLETE & FIXED
-// Handles form submission, tournament creation, and proper registration fee handling
+// ORGANIZE TOURNAMENT SCRIPT - FINAL WORKING
+// Fixes global variable conflict by using local API_BASE definition.
 // ============================================
 
 console.log('🎯 Organize Script Loading...');
 
-const API_BASE = 'http://localhost:5000/api';
-let preSelectedGameId = null;
-let preSelectedGameName = null;
+// ✅ FIX: Define API_BASE locally and reliably. This ensures the fetch URL is correct 
+// and avoids the global variable conflict with 'api.js'.
+const API_BASE = 'http://localhost:5000/api'; 
 
 // ============================================
 // INITIALIZATION
@@ -15,9 +15,12 @@ let preSelectedGameName = null;
 
 window.addEventListener('DOMContentLoaded', () => {
     console.log('📄 Organize Tournament Page Loaded');
-    checkOrganizerAccess();
-    loadGamesDropdown();
-    attachFormHandlers();
+    
+    // Check access first, then load data
+    if (checkOrganizerAccess()) {
+        loadGamesDropdown();
+        attachFormHandlers();
+    }
 });
 
 // ============================================
@@ -28,49 +31,43 @@ function checkOrganizerAccess() {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     
-    console.log('🔐 Access Check - Role:', role, 'Token:', token ? 'Found' : 'Not Found');
-    
-    if (!token) {
-        showError('Please login first');
-        setTimeout(() => window.location.href = 'login.html', 2000);
+    // If no token or role is not organizer/admin, redirect
+    if (!token || (role !== 'organizer' && role !== 'admin')) {
+        showError('Access Denied: Only organizers can create tournaments');
+        setTimeout(() => window.location.href = 'index.html', 2000); 
         return false;
     }
     
-    if (role !== 'organizer' && role !== 'admin') {
-        showError('Only organizers can create tournaments');
-        setTimeout(() => window.location.href = 'index.html', 2000);
-        return false;
-    }
-    
-    console.log('✅ Organizer access confirmed');
     return true;
 }
 
 // ============================================
-// LOAD GAMES DROPDOWN
+// LOAD GAMES DROPDOWN (Uses local API_BASE)
 // ============================================
 
 async function loadGamesDropdown() {
     try {
         console.log('🎮 Loading games for dropdown...');
         
-        const response = await fetch(`${API_BASE}/games`, {
+        // Use the reliable local API_BASE
+        const endpoint = `${API_BASE}/games`;
+
+        const response = await fetch(endpoint, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
         
-        if (!response.ok) throw new Error('Failed to fetch games');
+        // This check should now succeed if the backend is running
+        if (!response.ok) throw new Error(`Failed to fetch games: ${response.status}`);
         
         const data = await response.json();
-        console.log('✅ Games loaded:', data);
         
-        let games = [];
-        if (data.data && Array.isArray(data.data)) {
-            games = data.data;
-        } else if (Array.isArray(data)) {
-            games = data;
+        const games = data.data || data; 
+        
+        if (!Array.isArray(games)) {
+            throw new Error('Invalid games data received.');
         }
-        
+
         populateGameDropdown(games);
         
     } catch (error) {
@@ -80,7 +77,7 @@ async function loadGamesDropdown() {
 }
 
 function populateGameDropdown(games) {
-    const gameSelect = document.getElementById('gameId');
+    const gameSelect = document.getElementById('gameSelect'); 
     if (!gameSelect) return;
     
     gameSelect.innerHTML = '<option value="">-- Select a Game --</option>';
@@ -100,7 +97,7 @@ function populateGameDropdown(games) {
 // ============================================
 
 function attachFormHandlers() {
-    const form = document.getElementById('createTournamentForm');
+    const form = document.getElementById('tournamentForm');
     if (!form) {
         console.error('❌ Form not found');
         return;
@@ -108,28 +105,31 @@ function attachFormHandlers() {
     
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        await handleCreateTournament();
+        await handleCreateTournament(e.submitter);
     });
-    
-    console.log('✅ Form handlers attached');
 }
 
 // ============================================
 // HANDLE CREATE TOURNAMENT
 // ============================================
 
-async function handleCreateTournament() {
+async function handleCreateTournament(submitter) {
+    const form = document.getElementById('tournamentForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    setButtonLoading(submitter, true);
+
     try {
-        console.log('🏆 Creating tournament...');
-        
-        // Get form data
-        const formData = new FormData(document.getElementById('createTournamentForm'));
+        const formData = new FormData(form);
         const tournamentData = {
             name: formData.get('name')?.trim(),
             description: formData.get('description')?.trim(),
-            gameId: formData.get('gameId'),
+            gameId: formData.get('gameId'), 
             startDate: formData.get('startDate'),
-            endDate: formData.get('endDate'),
+            endDate: formData.get('endDate') || null, 
             maxParticipants: parseInt(formData.get('maxParticipants')) || 16,
             registrationFee: parseFloat(formData.get('registrationFee')) || 0,
             bracket: formData.get('bracket') || 'single-elimination',
@@ -137,65 +137,62 @@ async function handleCreateTournament() {
             rules: formData.get('rules')?.trim() || ''
         };
         
-        console.log('📝 Tournament Data:', tournamentData);
-        
-        // Validate required fields
-        if (!tournamentData.name) {
-            showError('Tournament name is required');
+        if (new Date(tournamentData.startDate) <= new Date()) {
+            showError('Start date must be in the future.');
+            setButtonLoading(submitter, false);
             return;
         }
-        if (!tournamentData.gameId) {
-            showError('Please select a game');
-            return;
-        }
-        if (!tournamentData.startDate) {
-            showError('Start date is required');
-            return;
-        }
-        if (tournamentData.registrationFee < 0) {
-            showError('Registration fee cannot be negative');
-            return;
-        }
-        
-        // ✅ Log the registration fee to verify it's being sent
-        console.log('💰 Registration Fee:', tournamentData.registrationFee);
         
         const token = localStorage.getItem('token');
         
-        const response = await fetch(`${API_BASE}/tournaments`, {
+        if (!token) {
+             showError('Authentication failed. Please log in again.');
+             setButtonLoading(submitter, false);
+             return;
+        }
+
+        // Use the reliable local API_BASE for the POST request
+        const apiUrl = `${API_BASE}/tournaments`;
+
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}` 
             },
             body: JSON.stringify(tournamentData)
         });
         
         const responseData = await response.json();
-        console.log('📤 Create Response:', responseData);
         
         if (!response.ok) {
-            throw new Error(responseData.message || 'Failed to create tournament');
+            console.error('Backend Error Response:', responseData);
+            throw new Error(responseData.message || `Failed to create tournament (Status: ${response.status})`);
         }
         
-        console.log('✅ Tournament created:', responseData.tournament._id);
+        showSuccess('✅ Tournament created successfully! Redirecting...');
         
-        showSuccess('✅ Tournament created successfully!');
+        const tournamentId = responseData.data?._id || responseData.tournament?._id;
         
-        // Redirect to tournament details
-        const tournamentId = responseData.tournament._id;
-        setTimeout(() => {
-            window.location.href = `tournament-details.html?id=${tournamentId}`;
-        }, 1500);
+        if (tournamentId) {
+             setTimeout(() => {
+                window.location.href = `tournament-details.html?id=${tournamentId}`;
+            }, 1500);
+        } else {
+            setTimeout(() => {
+                window.location.href = `tournament.html`;
+            }, 1500);
+        }
         
     } catch (error) {
         console.error('❌ Error creating tournament:', error);
         showError('Error: ' + error.message);
+        setButtonLoading(submitter, false);
     }
 }
 
 // ============================================
-// NOTIFICATION FUNCTIONS
+// NOTIFICATION & LOADING HELPERS
 // ============================================
 
 function showError(message) {
@@ -211,15 +208,10 @@ function showError(message) {
         z-index: 9998;
         max-width: 300px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        animation: slideIn 0.3s ease-out;
     `;
     div.textContent = message;
     document.body.appendChild(div);
-    
-    setTimeout(() => {
-        div.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => div.remove(), 300);
-    }, 4000);
+    setTimeout(() => div.remove(), 4000);
 }
 
 function showSuccess(message) {
@@ -235,53 +227,29 @@ function showSuccess(message) {
         z-index: 9998;
         max-width: 300px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        animation: slideIn 0.3s ease-out;
     `;
     div.textContent = message;
     document.body.appendChild(div);
-    
-    setTimeout(() => {
-        div.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => div.remove(), 300);
-    }, 3000);
+    setTimeout(() => div.remove(), 3000);
 }
 
-function showInfo(message) {
-    const div = document.createElement('div');
-    div.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #3498db;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        z-index: 9998;
-        max-width: 300px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        animation: slideIn 0.3s ease-out;
+function setButtonLoading(button, loading = true) {
+  if (!button) return;
+  if (loading) {
+    button.dataset.originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = `
+      <span style="display: inline-block; animation: spin 1s linear infinite;">⟳</span>
+      Creating...
     `;
-    div.textContent = message;
-    document.body.appendChild(div);
-    
-    setTimeout(() => {
-        div.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => div.remove(), 300);
-    }, 3000);
+    if (!document.getElementById('spin-animation')) {
+      const style = document.createElement('style');
+      style.id = 'spin-animation';
+      style.textContent = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+      document.head.appendChild(style);
+    }
+  } else {
+    button.disabled = false;
+    button.innerHTML = button.dataset.originalText || 'Create Tournament';
+  }
 }
-
-// Add slide animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(400px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(400px); opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
-
-console.log('✅ Organize Script Ready');

@@ -2,10 +2,13 @@
 // TOURNAMENT PAGE - FRONTEND SCRIPT
 // ============================================
 
-// ✅ FIXED: Fetch tournaments from backend API
-// No router reference - just fetch API endpoints
 
-// Fetch all tournaments
+
+let allTournaments = []; // Global store for all fetched tournaments
+
+// ============================================
+// 1. FETCH TOURNAMENTS
+// ============================================
 async function loadTournaments() {
     try {
         console.log('📥 Fetching tournaments from API...');
@@ -13,52 +16,63 @@ async function loadTournaments() {
         const tournamentsContainer = document.getElementById('tournamentsContainer');
         const emptyState = document.getElementById('emptyState');
 
-        // Show loading
         if (loadingState) loadingState.style.display = 'block';
         if (tournamentsContainer) tournamentsContainer.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'none';
 
-        // ✅ CORRECT: Fetch from backend API
-        const response = await fetch('/api/tournaments', {
+        // Use absolute URL
+        const apiUrl = `${API_BASE_URL}/tournaments`;
+
+        const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Content-Type': 'application/json'
             }
         });
-
-        console.log('📊 Response status:', response.status);
 
         if (!response.ok) {
             throw new Error(`API error: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('✅ Tournaments fetched:', data.count, 'tournaments');
-
-        // Hide loading
+        const tournamentList = Array.isArray(data) ? data : (data.data || []);
+        
+        // Store globally for filtering and modal use
+        allTournaments = tournamentList; 
+        
         if (loadingState) loadingState.style.display = 'none';
 
-        // Check if we have tournaments
-        if (!data.success || !data.data || data.data.length === 0) {
-            console.log('ℹ️ No tournaments found');
+        if (allTournaments.length === 0) {
             if (emptyState) emptyState.style.display = 'block';
             return;
         }
 
-        // Display tournaments
-        displayTournaments(data.data);
+        // Load Game filter dropdown data
+        await loadGameFilters(allTournaments);
+
+        // Display all tournaments initially
+        displayTournaments(allTournaments);
 
     } catch (error) {
         console.error('❌ Error fetching tournaments:', error);
-        const loadingState = document.getElementById('loadingState');
-        if (loadingState) {
-            loadingState.style.display = 'none';
-            loadingState.innerHTML = '❌ Error loading tournaments: ' + error.message;
+        if (loadingState) loadingState.style.display = 'none';
+        
+        const container = document.getElementById('tournamentsContainer');
+        if (container) {
+            container.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; color: #ff6b6b; padding: 20px;">
+                    <h3>⚠️ Could not load tournaments</h3>
+                    <p>Error: ${error.message}</p>
+                    <p>Make sure your Backend Server is running on port 5000!</p>
+                </div>
+            `;
         }
     }
 }
 
-// Display tournaments in grid
+// ============================================
+// 2. DISPLAY TOURNAMENTS
+// ============================================
 function displayTournaments(tournaments) {
     const container = document.getElementById('tournamentsContainer');
     if (!container) return;
@@ -71,79 +85,55 @@ function displayTournaments(tournaments) {
     });
 }
 
-// Create tournament card element
+// ============================================
+// 3. CREATE CARD HTML (NEW LOOK)
+// ============================================
 function createTournamentCard(tournament) {
     const card = document.createElement('div');
+    // ✅ Card Click: Now calls selectTournament which opens the modal
     card.className = 'tournament-card';
+    card.onclick = () => selectTournament(tournament._id); 
+
+    const gameImageUrl = tournament.game?.imageUrl || 'https://via.placeholder.com/300x200?text=Game+Image';
+    const statusClass = `status-${tournament.status}`;
+    const statusText = (tournament.status || 'draft').toUpperCase();
     
-    // Status badge
-    const statusClass = tournament.status === 'open' ? 'status-open' : 'status-closed';
-    const statusBadge = `<span class="tournament-status ${statusClass}">${tournament.status.toUpperCase()}</span>`;
-
-    // Participants progress
-    const maxParticipants = tournament.maxParticipants || 16;
-    const currentParticipants = tournament.currentParticipants || 0;
-    const progressPercent = (currentParticipants / maxParticipants) * 100;
-
-    // Game info
-    const gameName = tournament.game?.name || 'Unknown Game';
-
-    // Registration fee
-    const registrationFee = tournament.registrationFee || 0;
-    const feeDisplay = registrationFee > 0 ? `₹${registrationFee}` : 'FREE';
-
-    // Organizer name
-    const organizerName = tournament.organizer?.username || 'Unknown';
-
+    // Date formatting helper
+    const startDate = new Date(tournament.startDate);
+    const dateStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    
     card.innerHTML = `
-        ${statusBadge}
-        <h3 class="tournament-title">${tournament.name || 'Untitled Tournament'}</h3>
-        
-        <div class="tournament-info">
-            <div class="tournament-info-row">
-                <span>Game:</span>
-                <strong>${gameName}</strong>
-            </div>
-            <div class="tournament-info-row">
-                <span>Organizer:</span>
-                <strong>${organizerName}</strong>
-            </div>
-            <div class="tournament-info-row">
-                <span>Entry Fee:</span>
-                <strong>${feeDisplay}</strong>
-            </div>
-            <div class="tournament-info-row">
-                <span>Players:</span>
-                <strong>${currentParticipants}/${maxParticipants}</strong>
-            </div>
+        <div class="card-image">
+            <img src="${gameImageUrl}" alt="${tournament.game?.name}">
         </div>
-
-        <div class="progress-bar">
-            <div class="progress-fill" style="width: ${progressPercent}%"></div>
-        </div>
-
-        <div class="card-actions">
-            <button class="btn btn-primary" onclick="joinTournament('${tournament._id}')">Join</button>
-            <button class="btn btn-secondary" onclick="viewDetails('${tournament._id}')">Details</button>
+        <div class="card-content">
+            <span class="card-game">${tournament.game?.name || 'Unknown Game'}</span>
+            <h3 class="card-title">${tournament.name || 'Untitled Tournament'}</h3>
+            <p class="card-description">${tournament.description || 'No description provided.'}</p>
+            
+            <div class="card-meta">
+                <span class="card-status ${statusClass}">${statusText}</span>
+                <span class="card-date">${dateStr}</span>
+            </div>
         </div>
     `;
 
     return card;
 }
 
-// Join tournament
+// ============================================
+// 4. JOIN TOURNAMENT LOGIC
+// ============================================
 async function joinTournament(tournamentId) {
-    try {
-        console.log('📥 Joining tournament:', tournamentId);
-        
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Please login to join tournaments');
-            window.location.href = '/login.html';
-            return;
-        }
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Please login to join tournaments');
+        window.location.href = 'login.html';
+        return;
+    }
 
-        const response = await fetch(`/api/tournaments/${tournamentId}/join`, {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/join`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -154,12 +144,18 @@ async function joinTournament(tournamentId) {
         const data = await response.json();
 
         if (!response.ok) {
-            alert('❌ Error: ' + (data.message || 'Could not join tournament'));
+            alert('❌ ' + (data.message || 'Could not join tournament'));
             return;
         }
 
-        alert('✅ ' + data.message);
-        loadTournaments(); // Refresh list
+        // Handle paid/free logic
+        if (data.data && data.data.isPaid) {
+            // Redirect to detail page to initiate payment (Razorpay handler lives there)
+            window.location.href = `tournament-details.html?id=${tournamentId}`;
+        } else {
+            alert('✅ ' + data.message);
+            loadTournaments(); // Refresh list
+        }
 
     } catch (error) {
         console.error('❌ Error joining:', error);
@@ -167,46 +163,63 @@ async function joinTournament(tournamentId) {
     }
 }
 
-// View tournament details
-function viewDetails(tournamentId) {
-    console.log('📄 Opening details for:', tournamentId);
-    window.location.href = `/tournament-details.html?id=${tournamentId}`;
+// ============================================
+// 5. FILTERING
+// ============================================
+
+async function loadGameFilters(tournaments) {
+    const filterSelect = document.getElementById('gameFilter');
+    if (!filterSelect) return;
+    
+    // Extract unique games
+    const uniqueGames = tournaments.reduce((acc, t) => {
+        if (t.game && t.game._id && !acc.some(g => g._id === t.game._id)) {
+            acc.push(t.game);
+        }
+        return acc;
+    }, []);
+
+    uniqueGames.forEach(game => {
+        const option = document.createElement('option');
+        option.value = game._id;
+        option.textContent = game.name;
+        filterSelect.appendChild(option);
+    });
+
+    filterSelect.addEventListener('change', filterTournaments);
 }
 
-// Load tournaments on page load
+function filterTournaments() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const gameFilter = document.getElementById('gameFilter').value;
+    
+    const filtered = allTournaments.filter(tournament => {
+        const matchesSearch = tournament.name.toLowerCase().includes(searchText) ||
+                              tournament.description?.toLowerCase().includes(searchText);
+        const matchesGame = !gameFilter || tournament.game?._id === gameFilter;
+        return matchesSearch && matchesGame;
+    });
+
+    displayTournaments(filtered);
+
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState) emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+}
+
+
+// ============================================
+// 6. PAGE LOAD
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Tournament page loaded');
     loadTournaments();
-
-    // Setup filters (optional)
-    setupFilters();
-});
-
-// Setup search and filters
-function setupFilters() {
+    
+    // Setup search
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', debounce(filterTournaments, 300));
+        searchInput.addEventListener('input', filterTournaments);
     }
-}
+});
 
-// Debounce helper
-function debounce(func, delay) {
-    let timeoutId;
-    return function(...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func(...args), delay);
-    };
-}
-
-// Filter tournaments by search
-function filterTournaments() {
-    const searchValue = document.getElementById('searchInput')?.value.toLowerCase() || '';
-    const cards = document.querySelectorAll('.tournament-card');
-
-    cards.forEach(card => {
-        const title = card.querySelector('.tournament-title')?.textContent.toLowerCase() || '';
-        const visible = title.includes(searchValue);
-        card.style.display = visible ? 'block' : 'none';
-    });
-}
+// Expose joinTournament globally so it can be called from the Modal handler in HTML
+window.joinTournament = joinTournament;
