@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments - KrumVerse</title>
+    <style>
+        /* DARK THEME FOR TOURNAMENTS PAGE - MATCHING GAMES.HTML */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* ============================================
+           NAVBAR STYLING - UNIFORM ALL PAGES
+           ============================================ */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            min-height: 70px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navbar-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .navbar-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            .navbar-nav {
+                gap: 1rem;
+                order: 3;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            .navbar-buttons {
+                order: 2;
+            }
+        }
+
+        /* ===== PAGE STYLES ===== */
+        .blog-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+
+        .blog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .blog-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #f1f5f9;
+        }
+
+        .blog-header p {
+            color: var(--gray-text);
+            font-size: 1rem;
+        }
+
+        .blog-article {
+            background: var(--card-bg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 0.8rem;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .blog-article:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .blog-article h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+
+        .blog-article p {
+            color: var(--gray-text);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .read-more:hover {
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 3%;
+            }
+
+            .navbar-nav {
+                display: none;
+            }
+
+            .blog-container {
+                padding: 2rem 3%;
+            }
+
+            .blog-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-logo">KrumVerse</a>
+    <ul class="navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="games.html">Games</a></li>
+        <li><a href="tournament.html">Tournaments</a></li>
+        <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="navbar-buttons">
+        <a href="login.html" class="btn btn-primary">Login</a>
+        <a href="signup.html" class="btn btn-outline">Sign Up</a>
+    </div>
+</nav>
+
+<!-- BLOG CONTENT -->
+<div class="blog-container">
+    <div class="blog-header">
+        <h1>📰 Esports Blog</h1>
+        <p>Tips, guides, and insights from the esports community</p>
+    </div>
+
+    <article class="blog-article">
+        <h2>How to Organize a Successful Esports Tournament: A Complete Guide</h2>
+        <p>Organizing an esports tournament requires careful planning and execution. From selecting the right game and format to managing registrations and prizes, every detail matters. In this comprehensive guide, we'll walk you through the essential steps including choosing bracket types, setting up proper communication channels, managing participants, and ensuring smooth tournament flow. Whether you're hosting your first local tournament or planning a large-scale online event, these proven strategies will help you create an engaging competitive experience.</p>
+        <a href="#" class="read-more">Read More →</a>
+    </article>
+
+    <article class="blog-article">
+        <h2>Top 10 Competitive Games Dominating Esports in 2025</h2>
+        <p>Discover the most popular competitive games taking the esports world by storm this year. From tactical shooters like Valorant and CS2 to MOBAs like League of Legends and Dota 2, we analyze prize pools, viewer counts, and tournament activity. Learn which games offer the best opportunities for aspiring competitive players and tournament organizers.</p>
+        <a href="#" class="read-more">Read More →</a>
+    </article>
+
+    <article class="blog-article">
+        <h2>Building Your Dream Esports Team: Player Recruitment Strategies</h2>
+        <p>Finding the right players is crucial for esports success. This article explores effective recruitment strategies, team chemistry assessment, role assignments, and communication protocols. Learn how professional teams scout talent, conduct tryouts, and build cohesive rosters that perform under pressure. Includes tips for managing team conflicts and maintaining motivation.</p>
+        <a href="#" class="read-more">Read More →</a>
+    </article>
+
+    <article class="blog-article">
+        <h2>Monetizing Your Esports Platform: Sponsorships and Revenue Models</h2>
+        <p>Turning your esports passion into a sustainable business requires smart monetization strategies. Explore various revenue models including sponsorships, entry fees, premium memberships, merchandise, and streaming partnerships. Learn how successful tournament organizers attract sponsors, negotiate deals, and create win-win partnerships with brands looking to reach gaming audiences.</p>
+        <a href="#" class="read-more">Read More →</a>
+    </article>
+</div>
+
+</body>
+</html>

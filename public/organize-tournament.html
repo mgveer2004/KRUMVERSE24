@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organize Tournament - KrumVerse</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .game-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        /* NEW: Payment section styling */
+        .payment-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .fee-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fee-input-group input {
+            flex: 1;
+        }
+        .currency-symbol {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .fee-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+    </style>
+    <!-- Load API Configuration FIRST -->
+<script src="./config/api.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">KrumVerse</div>
+            <h1>Create New Tournament</h1>
+            <p>Fill in the details below to organize your esports tournament</p>
+        </div>
+
+        <div id="preSelectedGame" style="display: none;">
+            <p style="color: #666; margin-bottom: 15px;">🎮 Creating tournament for:</p>
+            <div class="game-badge" id="gameBadge"></div>
+        </div>
+
+        <form id="tournamentForm">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3 class="section-title">Basic Information</h3>
+                
+                <div class="form-group">
+                    <label for="tournamentName">Tournament Name *</label>
+                    <input type="text" id="tournamentName" name="name" required placeholder="e.g., BGMI Winter Championship">
+                </div>
+
+                <div class="form-group">
+                    <label for="gameSelect">Select Game *</label>
+                    <select id="gameSelect" name="game" required>
+                        <option value="">-- Select a Game --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Describe your tournament..."></textarea>
+                </div>
+            </div>
+
+            <!-- Tournament Details -->
+            <div class="form-section">
+                <h3 class="section-title">Tournament Details</h3>
+                
+                <div class="form-group">
+                    <label for="startDate">Start Date *</label>
+                    <input type="datetime-local" id="startDate" name="startDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="datetime-local" id="endDate" name="endDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="maxParticipants">Max Participants *</label>
+                    <input type="number" id="maxParticipants" name="maxParticipants" min="2" max="1000" value="16" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prizePool">Prize Pool</label>
+                    <input type="text" id="prizePool" name="prizePool" placeholder="e.g., ₹50,000">
+                </div>
+
+                <div class="form-group">
+                    <label for="bracket">Bracket Type *</label>
+                    <select id="bracket" name="bracket" required>
+                        <option value="">Select Bracket Type</option>
+                        <option value="single-elimination">Single Elimination</option>
+                        <option value="double-elimination">Double Elimination</option>
+                        <option value="round-robin">Round Robin</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- NEW: Payment Section -->
+            <div class="form-section payment-section">
+                <h3 class="section-title">💰 Registration Fee (Optional)</h3>
+                
+                <div class="form-group">
+                    <label for="registrationFee">Entry Fee</label>
+                    <div class="fee-input-group">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="registrationFee" name="registrationFee" min="0" step="1" value="0" placeholder="0">
+                    </div>
+                    <p class="fee-hint">💡 Set to 0 for free tournaments. Players will need to pay this amount to register.</p>
+                </div>
+            </div>
+
+            <!-- Rules & Regulations -->
+            <div class="form-section">
+                <h3 class="section-title">Rules & Regulations</h3>
+                
+                <div class="form-group">
+                    <label for="rules">Tournament Rules *</label>
+                    <textarea id="rules" name="rules" required placeholder="Enter tournament rules and regulations..."></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-secondary" onclick="window.location.href='tournament.html'">Cancel</button>
+                <button type="submit" class="btn-primary">Create Tournament 🏆</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="organize-script.js"></script>
+    <script src="notification.js"></script>
+
+
+</body>
+</html>

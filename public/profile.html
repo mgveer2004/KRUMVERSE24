@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | KrumVerse</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+        }
+
+        .profile-info h2 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .profile-role {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 2rem;
+            margin: 0 0 5px 0;
+        }
+
+        .stat-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <!-- Load API Configuration FIRST -->
+<script src="./config/api.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">KrumVerse</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="games.html">Games</a>
+            <a href="tournament.html">Tournaments</a>
+            <a href="blog.html">Blog</a>
+        </nav>
+        <div class="auth-buttons">
+            <!-- globalauth.js will inject profile/logout -->
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    👤
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileUsername">Loading...</h2>
+                    <span class="profile-role" id="profileRole">Player</span>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <h3 id="tournamentsCreated">0</h3>
+                    <p>Tournaments Created</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="tournamentsJoined">0</h3>
+                    <p>Tournaments Joined</p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>✏️ Edit Profile</h3>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="nickname">In-Game Nickname</label>
+                        <input type="text" id="nickname" placeholder="Enter your gaming nickname">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+
+                    <button type="submit" class="save-btn">💾 Save Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="globalauth.js"></script>
+    <script>
+        // ============================================
+        // PROFILE PAGE - FIXED VERSION
+        // ============================================
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Profile page loading...');
+            loadProfile();
+            loadUserTournaments();
+        });
+
+        function loadProfile() {
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            console.log('📝 Username from localStorage:', username);
+            console.log('📝 Role from localStorage:', role);
+
+            if (!username) {
+                alert('Please login first');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Set username and role
+            document.getElementById('profileUsername').textContent = username;
+            document.getElementById('profileRole').textContent = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Player';
+
+            // Load saved profile data
+            const savedProfile = JSON.parse(localStorage.getItem('profileData') || '{}');
+            document.getElementById('nickname').value = savedProfile.nickname || '';
+            document.getElementById('bio').value = savedProfile.bio || '';
+        }
+
+        async function loadUserTournaments() {
+            try {
+                const token = localStorage.getItem('token');
+                const userId = JSON.parse(localStorage.getItem('user') || '{}').id;
+                
+                if (!token) return;
+
+                const response = await fetch('http://localhost:5000/api/tournaments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to fetch tournaments');
+                    return;
+                }
+
+                const tournaments = await response.json();
+                
+                let created = 0;
+                let joined = 0;
+
+                tournaments.forEach(tournament => {
+                    if (tournament.organizer && tournament.organizer._id === userId) {
+                        created++;
+                    }
+                    if (tournament.participants && tournament.participants.includes(userId)) {
+                        joined++;
+                    }
+                });
+
+                document.getElementById('tournamentsCreated').textContent = created;
+                document.getElementById('tournamentsJoined').textContent = joined;
+
+                console.log(`✅ Tournaments: ${created} created, ${joined} joined`);
+
+            } catch (error) {
+                console.error('❌ Error loading tournaments:', error);
+                document.getElementById('tournamentsCreated').textContent = 0;
+                document.getElementById('tournamentsJoined').textContent = 0;
+            }
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const profileData = {
+                nickname: document.getElementById('nickname').value,
+                bio: document.getElementById('bio').value
+            };
+
+            localStorage.setItem('profileData', JSON.stringify(profileData));
+            
+            alert('✅ Profile saved successfully!');
+        });
+    </script>
+</body>
+</html>

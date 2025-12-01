@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments - KrumVerse</title>
+    <style>
+        /* DARK THEME FOR TOURNAMENTS PAGE - MATCHING GAMES.HTML */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* ============================================
+           NAVBAR STYLING - UNIFORM ALL PAGES
+           ============================================ */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            min-height: 70px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navbar-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .navbar-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            .navbar-nav {
+                gap: 1rem;
+                order: 3;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            .navbar-buttons {
+                order: 2;
+            }
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            margin-top: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 3rem;
+            padding: 4rem 5%;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hero-buttons .btn {
+            padding: 1rem 2rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-white {
+            background: rgb(26, 68, 122);
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-image {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1rem;
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features {
+            padding: 5rem 5%;
+            background: var(--dark-bg);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .section-header p {
+            font-size: 1rem;
+            color: var(--gray-text);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== NEWS SECTION ===== */
+        .news {
+            padding: 5rem 5%;
+            background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.1));
+        }
+
+        .news-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+        }
+
+        .featured-news {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .featured-news:hover {
+            border-color: var(--primary);
+        }
+
+        .featured-news img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .featured-content {
+            padding: 2rem;
+        }
+
+        .featured-label {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .featured-title {
+            font-size: 1.7rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .featured-desc {
+            color: var(--gray-text);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .news-time {
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        .news-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 1rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.8rem;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .news-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .news-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .news-item-content h4 {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .news-item-content p {
+            color: var(--gray-text);
+            font-size: 0.8rem;
+        }
+
+        /* ===== TOURNAMENTS SECTION ===== */
+        .tournaments {
+            padding: 5rem 5%;
+            background: var(--dark-bg);
+        }
+
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .tournament-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .view-all-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-link:hover {
+            transform: translateX(5px);
+        }
+
+        .tournaments-scroll {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .tournaments-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .tournaments-scroll::-webkit-scrollbar-track {
+            background: rgba(100, 116, 139, 0.1);
+            border-radius: 10px;
+        }
+
+        .tournaments-scroll::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .tournament-card {
+            flex: 0 0 300px;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .tournament-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .tournament-info {
+            padding: 1.5rem;
+        }
+
+        .tournament-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-live {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ff6b6b;
+        }
+
+        .status-open {
+            background: rgba(34, 197, 94, 0.2);
+            color: #51cf66;
+        }
+
+        .status-soon {
+            background: rgba(250, 204, 21, 0.2);
+            color: #ffd43b;
+        }
+
+        .tournament-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tournament-prize {
+            color: var(--gray-text);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .tournament-players {
+            color: var(--gray-text);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .tournament-action {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tournament-action:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .tournament-action:disabled {
+            background: var(--gray-text);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 4rem 5%;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--navbar-bg);
+            padding: 3rem 5%;
+            border-top: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: var(--gray-text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .footer-section p {
+            color: var(--gray-text);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(100, 116, 139, 0.2);
+            color: var(--gray-text);
+            font-size: 0.85rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 3%;
+            }
+
+            .navbar-nav {
+                display: none;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 2rem 3%;
+                margin-top: 0;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .news-container {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tournament-card {
+                flex: 0 0 250px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-logo">KrumVerse</a>
+    <ul class="navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="games.html">Games</a></li>
+        <li><a href="tournament.html">Tournaments</a></li>
+        <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="navbar-buttons">
+        <a href="login.html" class="btn btn-primary">Login</a>
+        <a href="signup.html" class="btn btn-outline">Sign Up</a>
+    </div>
+</nav>
+<div class="auth-buttons">
+            <!-- globalauth.js will inject Login/Signup OR Profile here -->
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>The Ultimate Esports Tournament Platform</h1>
+        <p>Join tournaments, compete with players worldwide, and win amazing prizes. Whether you're a player or organizer, KrumVerse has everything you need.</p>
+        <div class="hero-buttons">
+            <button class="btn btn-white" onclick="window.location.href='tournament.html'">Join Tournament</button>
+            <button class="btn btn-outline" onclick="window.location.href='organize-tournament.html'">Organize Event</button>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="https://imgs.search.brave.com/mPQCtRNUuJ2iEbWsNFaht-mHaLCgg8lw3i7JkfAYHhI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA1LzcwLzU3Lzg0/LzM2MF9GXzU3MDU3/ODQ3MF9YcXdwREwx/dnp0RTRvbWRGR0Fs/bDhUREY3OGdvakdj/bS5qcGc" alt="Esports Arena">
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features">
+    <div class="section-header">
+        <h2>Everything You Need for Esports</h2>
+        <p>From tournament management to real-time communication</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Tournament Management</h3>
+            <p>Create brackets, set rules, manage schedules and track progress with our advanced tournament system.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>Player Community</h3>
+            <p>Connect with players, form teams, and communicate through our integrated chat system.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎁</div>
+            <h3>Prize Management</h3>
+            <p>Automated prize distribution and management system for seamless tournament rewards.</p>
+        </div>
+    </div>
+</section>
+
+<!-- NEWS SECTION -->
+<section class="news" id="news">
+    <div class="section-header">
+        <h2>Latest Esports News</h2>
+        <p>Stay updated with the latest gaming and tournament updates</p>
+    </div>
+    <div class="news-container">
+        <div class="featured-news">
+            <img src="https://images.unsplash.com/photo-1538481527238-61416449a39d?w=600&h=400&fit=crop" alt="Featured">
+            <div class="featured-content">
+                <div class="featured-label">Featured</div>
+                <h3 class="featured-title">World Championship 2024 Announced</h3>
+                <p class="featured-desc">The biggest esports event of the year is coming with a record-breaking prize pool of $50 million...</p>
+                <p class="news-time">2 hours ago • Gaming News</p>
+            </div>
+        </div>
+        <div class="news-grid">
+            <div class="news-item">
+                <img src="https://images.unsplash.com/photo-1551431009-381d36ac3a99?w=100&h=100&fit=crop" alt="News 1">
+                <div class="news-item-content">
+                    <h4>New Gaming Gear Released</h4>
+                    <p>Latest gaming peripherals hit the market...</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.75rem;">4 hours ago</p>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="https://images.unsplash.com/photo-1516733725897-7e7fc1f68ce5?w=100&h=100&fit=crop" alt="News 2">
+                <div class="news-item-content">
+                    <h4>Team Phoenix Wins Major</h4>
+                    <p>Incredible comeback victory in finals...</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.75rem;">6 hours ago</p>
+                </div>
+            </div>
+            <div class="news-item">
+                <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=100&h=100&fit=crop" alt="News 3">
+                <div class="news-item-content">
+                    <h4>Industry Conference 2024</h4>
+                    <p>Key announcements from leading developers...</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.75rem;">8 hours ago</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- LIVE TOURNAMENTS SECTION -->
+<section class="tournaments" id="tournaments">
+    <div class="tournament-header">
+        <h2>Live Tournaments</h2>
+        <a href="tournament.html" class="view-all-link">View All →</a>
+    </div>
+    <div class="tournaments-scroll">
+        <!-- Tournaments loaded by indexscript.js -->
+    </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+    <h2>Ready to Compete?</h2>
+    <p>Join thousands of players and organizers in the ultimate esports experience</p>
+    <div class="cta-buttons">
+        <button class="btn btn-white" onclick="window.location.href='tournament.html'">Start Playing</button>
+        <button class="btn btn-outline" onclick="window.location.href='organize-tournament.html'">Organize Tournament</button>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>KrumVerse</h4>
+            <p>The ultimate esports tournament platform for players and organizers worldwide.</p>
+        </div>
+        <div class="footer-section">
+            <h4>Platform</h4>
+            <ul>
+                <li><a href="#tournaments">Tournaments</a></li>
+                <li><a href="#games">Games</a></li>
+                <li><a href="#">Leaderboards</a></li>
+                <li><a href="#">Prizes</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Community</h4>
+            <ul>
+                <li><a href="#news">News</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#">Forums</a></li>
+                <li><a href="#">Events</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Support</h4>
+            <ul>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 KrumVerse. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- INDEX SCRIPT - LOADS TOURNAMENTS FROM DATABASE -->
+<script src="indexscript.js"></script>
+<script src="globalauth.js"></script>
+
+</body>
+</html>

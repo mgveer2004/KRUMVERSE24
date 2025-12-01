@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrumVerse - Esports News</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --gray-text: #cbd5e1;
+            --navbar-bg: #1a1f35;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --light-text: #f1f5f9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--navbar-bg);
+            border-bottom: 1px solid rgba(100, 116, 139, 0.1);
+        }
+
+        .navbar-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .navbar-nav a {
+            color: var(--gray-text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .navbar-nav a:hover {
+            color: var(--primary);
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 0.4rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ===== PAGE STYLES ===== */
+        .news-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+
+        .news-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .news-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+        }
+
+        .news-header p {
+            color: var(--gray-text);
+            font-size: 1rem;
+        }
+
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .news-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1.5rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.8rem;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .news-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+        }
+
+        .news-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+        }
+
+        .news-content p {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--gray-text);
+            font-size: 0.8rem;
+        }
+
+        .news-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .news-link:hover {
+            transform: translateX(3px);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 3%;
+            }
+
+            .navbar-nav {
+                display: none;
+            }
+
+            .news-container {
+                padding: 2rem 3%;
+            }
+
+            .news-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .news-item {
+                grid-template-columns: 1fr;
+            }
+
+            .news-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-logo">KrumVerse</a>
+    <ul class="navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="games.html">Games</a></li>
+        <li><a href="tournament.html">Tournaments</a></li>
+        <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="navbar-buttons">
+        <a href="login.html" class="btn btn-primary">Login</a>
+        <a href="signup.html" class="btn btn-outline">Sign Up</a>
+    </div>
+</nav>
+
+<!-- NEWS CONTENT -->
+<div class="news-container">
+    <div class="news-header">
+        <h1>📰 Latest Esports News</h1>
+        <p>Stay updated with the latest gaming and tournament news</p>
+    </div>
+
+    <div class="news-list" id="newsList">
+        <!-- News items will be loaded here -->
+    </div>
+</div>
+
+<script>
+    const newsItems = [
+        {
+            title: "World Championship 2024 Announced",
+            desc: "The biggest esports event of the year is coming with a record-breaking prize pool of $50 million. Major teams from around the world are preparing for the ultimate competition.",
+            date: "2 hours ago",
+            category: "Tournaments"
+        },
+        {
+            title: "Team Phoenix Wins Major Tournament",
+            desc: "In an incredible comeback, Team Phoenix defeated FaZe Clan in the grand finals. The match went to overtime with an amazing 16-14 final score.",
+            date: "4 hours ago",
+            category: "Tournaments"
+        },
+        {
+            title: "New Gaming Gear Released",
+            desc: "Leading peripheral manufacturers announced new esports-grade gaming mice and keyboards with advanced features for competitive players.",
+            date: "6 hours ago",
+            category: "Hardware"
+        },
+        {
+            title: "Pro Player Signs Historic Contract",
+            desc: "One of the world's best esports players has signed a multi-year contract worth millions with a top esports organization.",
+            date: "8 hours ago",
+            category: "Players"
+        }
+    ];
+
+    function renderNews() {
+        const list = document.getElementById('newsList');
+        list.innerHTML = newsItems.map(news => `
+            <div class="news-item">
+                <div class="news-image"></div>
+                <div class="news-content">
+                    <h3>${news.title}</h3>
+                    <p>${news.desc}</p>
+                    <div class="news-meta">
+                        <span>${news.date} • ${news.category}</span>
+                        <a href="#" class="news-link">Read More →</a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.addEventListener('load', renderNews);
+</script>
+
+</body>
+</html>

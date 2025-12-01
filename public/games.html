@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments - KrumVerse</title>
+    <style>
+        /* DARK THEME FOR TOURNAMENTS PAGE - MATCHING GAMES.HTML */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* ============================================
+           NAVBAR STYLING - UNIFORM ALL PAGES
+           ============================================ */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            min-height: 70px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navbar-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .navbar-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            .navbar-nav {
+                gap: 1rem;
+                order: 3;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            .navbar-buttons {
+                order: 2;
+            }
+        }
+
+        /* ============================================
+           PAGE SPECIFIC STYLES
+           ============================================ */
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: #bbb;
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 50px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: #888;
+        }
+
+        /* FILTERS */
+        .filters-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 25px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        /* TOURNAMENTS GRID */
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        /* TOURNAMENT CARD */
+        .tournament-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.4);
+        }
+
+        .tournament-status {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .status-open {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+        }
+
+        .status-closed {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        }
+
+        .tournament-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .tournament-info {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: #bbb;
+        }
+
+        .tournament-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .tournament-info-label {
+            color: #888;
+        }
+
+        .tournament-info-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .card-actions .btn {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+
+        .btn-join {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-join:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-view {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .btn-view:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            margin-top: 50px;
+        }
+
+        .empty-state h2 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #bbb;
+            margin-bottom: 30px;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .empty-state a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        /* LOADING STATE */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ERROR MESSAGE */
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            border: 2px solid #ff4757;
+            color: #ff9999;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 80px 15px 30px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .tournaments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .filters-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR - IDENTICAL TO INDEX.HTML -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-logo">KrumVerse</a>
+        <ul class="navbar-nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="games.html">Games</a></li>
+            <li><a href="tournament.html">Tournaments</a></li>
+            <li><a href="blog.html">Blog</a></li>
+        </ul>
+        <div class="navbar-buttons">
+            <a href="login.html" class="btn btn-primary">Login</a>
+            <a href="signup.html" class="btn btn-outline">Sign Up</a>
+        </div>
+    </nav>
+        <div class="auth-buttons">
+            <!-- globalauth.js will inject Login/Signup OR Profile here -->
+        </div>
+    </header>
+
+    <!-- GAMES SECTION -->
+    <div class="games-container">
+        <div class="page-header">
+            <h1>Our Games</h1>
+            <p>Discover the most popular esports titles</p>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-container">
+            <input 
+                type="text" 
+                class="search-box" 
+                id="searchInput" 
+                placeholder="Search games..."
+            >
+        </div>
+
+        <!-- LOADING STATE -->
+        <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>Loading games...</p>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>No games found</h2>
+            <p>Check back later for updates!</p>
+        </div>
+
+        <!-- GAMES GRID -->
+        <div class="games-grid" id="gamesGrid"></div>
+    </div>
+
+    <!-- MODAL POPUP -->
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeGameModal()">×</button>
+            
+            <div class="modal-header">
+                <h2 class="modal-game-title" id="modalGameTitle"></h2>
+                <p class="modal-game-genre" id="modalGameGenre"></p>
+            </div>
+
+            <div class="modal-body">
+                <p class="modal-game-description" id="modalGameDescription"></p>
+                <img 
+                    src="" 
+                    alt="Game" 
+                    class="modal-game-image" 
+                    id="modalGameImage"
+                >
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn btn-view-tournaments" onclick="viewTournaments()">
+                    View Tournaments
+                </button>
+                <button class="modal-btn btn-join" onclick="joinTournament()">
+                    Join Tournament
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include globalauth.js to manage header auth state -->
+    <script src="globalauth.js"></script>
+    <script src="gamesScript.js"></script>
+</body>
+</html>

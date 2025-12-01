@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KrumVerse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-home:hover {
+            transform: translateX(-5px);
+            opacity: 0.8;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 35px 25px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        .login-body {
+            padding: 35px 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.15);
+        }
+
+        .error-message {
+            background: #ffebee;
+            border: 1px solid #ef5350;
+            color: #c62828;
+            padding: 11px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            border: 1px solid #66bb6a;
+            color: #2e7d32;
+            padding: 11px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #333;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #764ba2;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider span {
+            margin: 0 12px;
+            font-weight: 600;
+        }
+
+        .oauth-btn {
+            width: 100%;
+            padding: 11px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .oauth-btn:hover {
+            border-color: #667eea;
+            background: #f8f8f8;
+            transform: translateY(-1px);
+        }
+
+        .login-footer {
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .login-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 480px) {
+            .back-home {
+                font-size: 14px;
+            }
+            .login-header h1 {
+                font-size: 24px;
+            }
+            .login-container {
+                max-width: 100%;
+                border-radius: 10px;
+            }
+            .login-body {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-home">← Back to Home</a>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🎮 KrumVerse</h1>
+            <p>Welcome Back!</p>
+        </div>
+
+        <div class="login-body">
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="password-reset.html" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+            </form>
+
+            <div class="divider"><span>OR</span></div>
+
+            <button type="button" class="oauth-btn" onclick="handleGoogleLogin()">
+                <span>🔵</span>
+                <span>Sign in with Google</span>
+            </button>
+
+            <div class="login-footer">
+                Don't have an account? <a href="signup.html">Create one now →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script>
+        // ============================================
+        // LOGIN FORM HANDLER - FIXED & COMPLETE
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM loaded, initializing login form');
+            
+            const form = document.getElementById('loginForm');
+            
+            if (!form) {
+                console.error('❌ Form not found! Check HTML structure.');
+                return;
+            }
+
+            // Add form submit listener
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('📝 Form submitted');
+                
+                // Get input values
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                
+                if (!emailInput || !passwordInput) {
+                    console.error('❌ Input fields not found!');
+                    showErrorMessage('Form fields not found. Please refresh page.');
+                    return;
+                }
+                
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                console.log('📧 Email:', email);
+                console.log('🔐 Password length:', password.length);
+                
+                // Validation
+                if (!email || !password) {
+                    showErrorMessage('Please enter both email and password');
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showErrorMessage('Please enter a valid email');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showErrorMessage('Password must be at least 6 characters');
+                    return;
+                }
+
+                // Disable button and show loading
+                const submitBtn = document.getElementById('loginBtn');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Signing in...';
+
+                try {
+                    console.log('🚀 Sending login request to backend...');
+                    
+                    const response = await fetch('http://localhost:5000/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    });
+
+                    console.log('📨 Response received - Status:', response.status);
+
+                    if (!response.ok) {
+                        let errorMessage = 'Login failed';
+                        try {
+                            const errorData = await response.json();
+                            errorMessage = errorData.message || errorMessage;
+                            console.error('❌ Server error:', errorData);
+                        } catch (e) {
+                            errorMessage = `Server error ${response.status}. Check if backend is running on port 5000.`;
+                        }
+                        throw new Error(errorMessage);
+                    }
+
+                    const data = await response.json();
+                    console.log('✅ Login successful!');
+                    console.log('👤 User data:', data.user);
+
+                    // Save token and user info
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('role', data.user.role);
+                    localStorage.setItem('email', data.user.email);
+
+                    showSuccessMessage('Login successful! Redirecting...');
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('❌ Login error:', error.message);
+                    showErrorMessage(error.message || 'Login failed. Please try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            });
+        });
+
+        // ============================================
+        // ERROR/SUCCESS MESSAGE HELPERS
+        // ============================================
+        function showErrorMessage(message) {
+            console.log('🔴 ERROR:', message);
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            if (errorDiv && successDiv) {
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+                successDiv.classList.remove('show');
+                
+                setTimeout(() => {
+                    errorDiv.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        function showSuccessMessage(message) {
+            console.log('🟢 SUCCESS:', message);
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (successDiv && errorDiv) {
+                successDiv.textContent = message;
+                successDiv.classList.add('show');
+                errorDiv.classList.remove('show');
+            }
+        }
+
+        // ============================================
+        // GOOGLE LOGIN HANDLER
+        // ============================================
+        function handleGoogleLogin() {
+            console.log('🔵 Google login clicked');
+            google.accounts.id.initialize({
+                client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE',
+                callback: onGoogleSignInSuccess
+            });
+            google.accounts.id.prompt();
+        }
+
+        async function onGoogleSignInSuccess(response) {
+            const token = response.credential;
+            console.log('🔵 Google token received');
+
+            try {
+                const loginResponse = await fetch('http://localhost:5000/api/auth/google-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const data = await loginResponse.json();
+                console.log('🟢 Google login response:', data);
+
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('role', data.user.role);
+                    localStorage.setItem('email', data.user.email);
+                    
+                    showSuccessMessage('Google login successful!');
+                    
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Google login failed');
+                }
+            } catch (error) {
+                console.error('❌ Google login error:', error);
+                showErrorMessage(error.message || 'Google login failed');
+            }
+        }
+    </script>
+</body>
+</html>
