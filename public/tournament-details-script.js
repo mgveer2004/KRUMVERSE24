@@ -1,10 +1,10 @@
 // ============================================
-// TOURNAMENT DETAILS & CHAT SCRIPT - FINAL WORKING VERSION
-// FIXES FIREBASE CONFIG MISSING ERROR
+// TOURNAMENT DETAILS & CHAT SCRIPT - FINAL FIXED VERSION
 // ============================================
 
+// 🚨 POLISH: Direct import from modules (relies on HTML file pre-loading the URL)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { 
     getFirestore, collection, query, orderBy, onSnapshot, 
     addDoc, serverTimestamp 
@@ -16,14 +16,16 @@ console.log('🎮 Tournament Details Script Loaded (Module)');
 // CONFIGURATION
 // ============================================
 const API_BASE = 'http://localhost:5000/api';
+// 🚨 POLISH: Use hardcoded test key as fallback, but rely on API response for payment flow
 const RAZORPAY_KEY_ID = 'rzp_test_RlxelfIP7Gy0Nj'; 
-const USE_MOCK_PAYMENT = true; // Set to true for development
+const USE_MOCK_PAYMENT = true; 
 
 let currentTournament = null;
 let currentUser = null;
 let tournamentId = null;
 
-let db, auth, userId; 
+let db, auth; 
+let firebaseAppId = null;
 
 
 // ============================================
@@ -43,69 +45,83 @@ window.addEventListener('DOMContentLoaded', async () => {
     const userDataString = localStorage.getItem('user');
     if (userDataString) {
         try {
+            // 🚨 POLISH: Parse user object once
             currentUser = JSON.parse(userDataString);
         } catch (error) {
             console.error('Error parsing user data:', error);
         }
     }
     
-    // 1. Initialize Firebase and Auth - Pass global variables explicitly
-    // ✅ FIX: Safely read global variables once inside DOMContentLoaded
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-    
-    await initializeFirebaseAndAuth(appId, firebaseConfig, initialAuthToken);
-    
-    // 2. Load Tournament Details
+    // 1. Load Tournament Details first to get initial data
     await loadTournamentDetails(tournamentId);
 
+    // 2. Initialize Firebase and Auth (if config is present)
+    // 🚨 FIX: Safely retrieve config from window scope
+    const resolvedFirebaseConfig = window.__firebase_config ? JSON.parse(window.__firebase_config) : null;
+    firebaseAppId = window.__firebase_app_id || 'default-app-id';
+    
+    if (resolvedFirebaseConfig) {
+        await initializeFirebaseAndAuth(resolvedFirebaseConfig);
+    } else {
+        console.warn("🛑 Firebase config is missing from HTML. Chat disabled.");
+    }
+
     // 3. Setup Chat (after tournament and auth are ready)
-    if (db && userId && currentTournament) {
+    if (db && currentUser && currentTournament) {
         setupChat(tournamentId);
     }
+    
+    // 🚨 CRITICAL FIX 3: Attach event listeners to the chat input/button
+    const sendBtn = document.getElementById('sendBtn');
+    const chatInput = document.getElementById('chatInput');
+    
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendMessage);
+    }
+    
+    if (chatInput) {
+        // Prevent form submission and call sendMessage on Enter
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                sendMessage();
+            }
+        });
+    }
+
 });
 
 // ============================================
 // FIREBASE & AUTH SETUP (FINAL STABILITY FIX)
 // ============================================
 
-async function initializeFirebaseAndAuth(resolvedAppId, resolvedFirebaseConfig, resolvedAuthToken) {
+async function initializeFirebaseAndAuth(resolvedFirebaseConfig) {
     
-    if (!resolvedFirebaseConfig) {
-        console.error("🛑 Firebase config is missing. Chat and persistence disabled.");
-        return;
-    }
-
     try {
         const app = initializeApp(resolvedFirebaseConfig);
         db = getFirestore(app);
         auth = getAuth(app);
     
-        // Update global variables for use in other functions
-        appId = resolvedAppId;
-        firebaseConfig = resolvedFirebaseConfig; 
-        
-        if (resolvedAuthToken) {
-            await signInWithCustomToken(auth, resolvedAuthToken);
-        } else {
-            await signInAnonymously(auth);
-        }
+        // Use currentUser.id as the custom token to identify the user if token exists.
+        // For KrumVerse MVP, we sign in anonymously as chat access is determined by participation status.
+        await signInAnonymously(auth);
     
         await new Promise(resolve => {
             onAuthStateChanged(auth, user => {
-                if (user) { userId = user.uid; } else { userId = crypto.randomUUID(); }
+                if (user) {
+                    console.log('✅ Firebase Signed In Anonymously:', user.uid);
+                }
                 resolve();
             });
         });
         
     } catch (error) {
-        console.error("Firebase Auth/Initialization Error:", error);
+        console.error("❌ Firebase Auth/Initialization Error:", error);
     }
 }
 
 // ============================================
-// LOAD TOURNAMENT DETAILS (Remains the same)
+// LOAD TOURNAMENT DETAILS
 // ============================================
 
 async function loadTournamentDetails(id) {
@@ -131,7 +147,7 @@ async function loadTournamentDetails(id) {
 }
 
 // ============================================
-// DISPLAY TOURNAMENT DETAILS (Remains the same)
+// DISPLAY TOURNAMENT DETAILS
 // ============================================
 
 function displayTournamentDetails() {
@@ -160,7 +176,7 @@ function displayTournamentDetails() {
 }
 
 // ============================================
-// ACTION BUTTON & JOIN LOGIC (Remains the same)
+// ACTION BUTTON & JOIN LOGIC
 // ============================================
 
 function updateActionButton(t) {
@@ -169,7 +185,8 @@ function updateActionButton(t) {
     
     const currentUserIdString = currentUser?.id?.toString();
 
-    const participant = t.participants.find(p => p.user?._id?.toString() === currentUserIdString);
+    // 🚨 FIX: Ensure participant ID check uses toString() on participant.user._id
+    const participant = t.participants.find(p => p.user?.toString() === currentUserIdString);
     const isRegistered = !!participant;
     
     if (t.status !== 'open') {
@@ -241,7 +258,7 @@ async function handleJoinTournament() {
 }
 
 // ============================================
-// RAZORPAY PAYMENT FLOW (MOCK BYPASS INSIDE)
+// RAZORPAY PAYMENT FLOW
 // ============================================
 
 async function startPayment(orderData) {
@@ -328,7 +345,7 @@ async function verifyPayment(paymentData) {
 }
 
 // ============================================
-// 5. FIREBASE CHAT IMPLEMENTATION
+// 5. FIREBASE CHAT IMPLEMENTATION (Cleaned up)
 // ============================================
 
 function setupChat(tId) {
@@ -337,12 +354,12 @@ function setupChat(tId) {
     // Get current user ID string (from local storage)
     const currentUserId = currentUser?.id; 
 
-    // FIX 1: Organizer check must use .toString() for guaranteed comparison
+    // 🚨 FIX: Ensure Organizer check uses currentUser.id (from localstorage user object)
     const isOrganizer = t.organizer?._id?.toString() === currentUserId;
 
-    // FIX 2: Participant check must use .toString() for guaranteed comparison
+    // 🚨 FIX: Ensure Participant check uses toString() on participant.user
     const isParticipant = t.participants.some(p => 
-        p.user?._id?.toString() === currentUserId
+        p.user?.toString() === currentUserId
     );
 
     const isAuthorized = isOrganizer || isParticipant;
@@ -352,6 +369,9 @@ function setupChat(tId) {
     
     if (!isAuthorized) {
         chatInput.placeholder = "You must register or be the organizer to chat.";
+        // 🚨 FIX: Ensure buttons are disabled if unauthorized
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
         return;
     }
 
@@ -360,16 +380,14 @@ function setupChat(tId) {
     chatInput.disabled = false;
     sendBtn.disabled = false;
     chatInput.placeholder = "Type your message...";
-    chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') sendMessage();
-    });
     
     if (!db) {
         console.error("Firestore not initialized. Cannot load messages.");
         return;
     }
-
-    const chatCollectionRef = collection(db, `artifacts/${appId}/public/data/tournament_chats/${tId}/messages`);
+    
+    // 🚨 FIX: Use the globally provided app ID in the path
+    const chatCollectionRef = collection(db, `artifacts/${firebaseAppId}/public/data/tournament_chats/${tId}/messages`);
     const q = query(chatCollectionRef, orderBy('createdAt', 'asc'));
 
     onSnapshot(q, (snapshot) => {
@@ -394,7 +412,8 @@ async function sendMessage() {
     const isOrganizer = currentTournament.organizer?._id?.toString() === currentUser.id;
 
     try {
-        const chatCollectionRef = collection(db, `artifacts/${appId}/public/data/tournament_chats/${tId}/messages`);
+        // 🚨 FIX: Use the globally provided app ID in the path
+        const chatCollectionRef = collection(db, `artifacts/${firebaseAppId}/public/data/tournament_chats/${tId}/messages`);
         
         addDoc(chatCollectionRef, {
             text: messageText,

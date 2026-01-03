@@ -1,108 +1,59 @@
-// ============================================
-// RAZORPAY SERVICE - COMPLETE WORKING
-// ============================================
-// Status: ✅ CORRECT & WORKING
-// This service handles creation and verification of Razorpay orders.
-
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
-// We need to ensure dotenv config is run if this file is imported early
 require('dotenv').config(); 
-
-// ============================================
-// INITIALIZE RAZORPAY WITH REAL CREDENTIALS
-// ============================================
 
 const KEY_ID = process.env.RAZORPAY_KEY_ID;
 const KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
-console.log('🚀 Initializing Razorpay...');
-console.log('📍 Key ID:', KEY_ID?.slice(0, 15) + '...');
-
-// Ensure keys exist before initializing the client
+// Fail-safe initialization
 if (!KEY_ID || !KEY_SECRET) {
-    console.error('❌ CRITICAL: RAZORPAY KEYS ARE MISSING OR INVALID. Payment will fail.');
-    // We proceed, but the functions below will rely on the error catching mechanism.
+    console.warn('⚠️ WARNING: Razorpay keys are missing. Payments will fail.');
 }
 
-// Ensure the Razorpay instance is only created once
 const razorpay = new Razorpay({
-    key_id: KEY_ID,
-    key_secret: KEY_SECRET
+    key_id: KEY_ID || 'mock_key',
+    key_secret: KEY_SECRET || 'mock_secret'
 });
-
-console.log('✅ Razorpay initialized successfully!');
-
-// ============================================
-// CREATE ORDER (REAL RAZORPAY)
-// ============================================
 
 const createOrder = async (amount, tournamentId) => {
     try {
-        if (!KEY_ID || !KEY_SECRET) {
-             throw new Error('Razorpay keys not configured on server.');
-        }
+        if (!KEY_ID) throw new Error('Payment gateway not configured');
 
-        console.log('💳 Creating Razorpay order...');
         const options = {
-            amount: Math.round(amount * 100), // Convert to paise
+            amount: Math.round(amount * 100), // INR to Paise
             currency: 'INR',
-            receipt: `tournament_${tournamentId}_${Date.now()}`,
+            receipt: `trn_${tournamentId}_${Date.now()}`,
             notes: {
                 tournamentId: tournamentId.toString(),
                 appName: 'KRUMVERSE'
             }
         };
 
-        // This is the point of execution that caused the 500 error:
-        const order = await razorpay.orders.create(options); 
-
-        console.log('✅ Order created successfully! ID:', order.id);
+        const order = await razorpay.orders.create(options);
         return order;
 
     } catch (error) {
-        // Log the full Razorpay error response message for better debugging
-        console.error('❌ Error creating Razorpay order:', error.message);
-        throw new Error(`Razorpay API failure. Please check the backend logs for: ${error.message}`);
+        console.error('Razorpay Create Order Error:', error.message);
+        throw new Error('Payment initialization failed');
     }
 };
 
-// ============================================
-// VERIFY PAYMENT SIGNATURE (CRITICAL SECURITY)
-// ============================================
-
 const verifyPaymentSignature = (orderId, paymentId, signature) => {
     try {
-        console.log('🔐 Verifying payment signature...');
-        
         const message = `${orderId}|${paymentId}`;
         const generatedSignature = crypto
             .createHmac('sha256', KEY_SECRET)
             .update(message)
             .digest('hex');
 
-        const isValid = generatedSignature === signature;
-
-        if (!isValid) {
-            console.log('❌ Invalid signature! Possible fraud attempt!');
-        }
-
-        return isValid;
-
+        return generatedSignature === signature;
     } catch (error) {
-        console.error('❌ Error verifying signature:', error.message);
+        console.error('Signature Verification Error:', error.message);
         return false;
     }
 };
 
-// ============================================
-// EXPORT ALL FUNCTIONS
-// ============================================
-
 module.exports = {
     createOrder,
-    verifyPaymentSignature,
-    // Include other optional functions if they were in the original file (e.g., getPaymentDetails, refundPayment)
+    verifyPaymentSignature
 };
-
-console.log('✅ Razorpay Service Ready!');

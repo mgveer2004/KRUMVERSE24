@@ -1,5 +1,5 @@
 // ============================================
-// PROFILE PAGE - BACKEND CONNECTED
+// PROFILE PAGE - BACKEND CONNECTED - FIXED
 // ============================================
 window.addEventListener('DOMContentLoaded', function() {
   loadProfile();
@@ -14,24 +14,21 @@ function loadProfile() {
   
   const user = JSON.parse(localStorage.getItem('user'));
   const username = localStorage.getItem('username');
-  const role = localStorage.getItem('role'); // ← GET ROLE FROM LOCALSTORAGE
-
-  console.log('👤 User from localStorage:', { username, role, user });
+  const role = localStorage.getItem('role');
 
   if (!user || !username) {
     alert('Please login first');
     window.location.href = 'login.html';
-    return; // ← ADDED MISSING CLOSING BRACE HERE!
+    return;
   }
 
   // Set username and role
   const displayName = username.charAt(0).toUpperCase() + username.slice(1);
   const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Player';
 
-  console.log('✅ Setting profile:', { displayName, displayRole });
-
   document.getElementById('profileUsername').textContent = displayName;
   document.getElementById('profileRole').textContent = displayRole;
+  document.getElementById('profileEmail').value = user.email || 'N/A'; // Display email
 
   // Load saved profile data from localStorage
   const savedProfile = JSON.parse(localStorage.getItem('profileData') || '{}');
@@ -40,7 +37,7 @@ function loadProfile() {
 }
 
 // ============================================
-// LOAD TOURNAMENTS FROM BACKEND
+// LOAD TOURNAMENTS FROM BACKEND - FIXED LOGIC
 // ============================================
 async function loadUserTournaments() {
   try {
@@ -49,12 +46,8 @@ async function loadUserTournaments() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
     
-    if (!token) {
-      console.warn('⚠️ No token found');
-      return;
-    }
+    if (!token) return;
 
-    // Fetch all tournaments
     const response = await fetch('http://localhost:5000/api/tournaments', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -63,26 +56,24 @@ async function loadUserTournaments() {
 
     if (!response.ok) {
       console.error('Failed to fetch tournaments:', response.status);
-      document.getElementById('tournamentsCreated').textContent = 0;
-      document.getElementById('tournamentsJoined').textContent = 0;
       return;
     }
 
-    const tournaments = await response.json();
-    console.log('📊 Tournaments received:', tournaments);
-
-    // Count tournaments based on user role
+    const data = await response.json();
+    const tournaments = data.data || [];
+    
     let created = 0;
     let joined = 0;
 
     tournaments.forEach(tournament => {
-      // Count created tournaments (if organizer)
+      // Count created tournaments (Check if organizer ID matches current user ID)
       if (tournament.organizer && tournament.organizer._id === user.id) {
         created++;
       }
 
-      // Count joined tournaments
-      if (tournament.participants && tournament.participants.includes(user.id)) {
+      // 🚨 FIXED LOGIC: Use .some() to check if the user exists in the participants array
+      const isJoined = tournament.participants.some(p => p.user?._id === user.id);
+      if (isJoined) {
         joined++;
       }
     });
@@ -91,13 +82,11 @@ async function loadUserTournaments() {
     document.getElementById('tournamentsCreated').textContent = created;
     document.getElementById('tournamentsJoined').textContent = joined;
     
-    console.log(`✅ Tournaments loaded: ${created} created, ${joined} joined`);
+    // Show/Hide Organizer specific stat box
+    document.getElementById('statCreated').style.display = user.role === 'organizer' || user.role === 'admin' ? 'block' : 'none';
 
   } catch (error) {
     console.error('❌ Error loading tournaments:', error);
-    // Set to 0 if error
-    document.getElementById('tournamentsCreated').textContent = 0;
-    document.getElementById('tournamentsJoined').textContent = 0;
   }
 }
 
@@ -112,9 +101,8 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
     bio: document.getElementById('bio').value
   };
 
-  // Save to localStorage (backend endpoint can be added later)
+  // Save to localStorage
   localStorage.setItem('profileData', JSON.stringify(profileData));
   
-  console.log('✅ Profile data saved:', profileData);
   alert('✅ Profile saved successfully!');
 });

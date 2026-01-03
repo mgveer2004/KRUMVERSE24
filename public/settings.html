@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - KrumVerse</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #28283d;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+            color: #f1f5f9;
+        }
+        .settings-container h1 {
+            color: #667eea;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .settings-group {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .settings-group h2 {
+            font-size: 1.5rem;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+        .settings-group p {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <a href="index.html" class="navbar-logo">KrumVerse</a>
+        <div id="auth-container"></div>
+    </nav>
+
+    <div class="settings-container">
+        <h1>⚙️ Account Settings</h1>
+        
+        <div class="settings-group">
+            <h2>Profile Management</h2>
+            <p>Update your nickname, bio, and change your password.</p>
+            <a href="profile.html" style="color: #667eea;">Go to Profile Editor →</a>
+        </div>
+
+        <div class="settings-group">
+            <h2>Notifications</h2>
+            <p>Manage your email preferences and in-app reminders.</p>
+        </div>
+
+        <div class="settings-group">
+            <h2>Data & Privacy</h2>
+            <p>Review our privacy policy and manage your data export requests.</p>
+        </div>
+
+        <p style="text-align: center; color: #999; margin-top: 20px;">*Note: This page is for demonstration purposes.</p>
+    </div>
+
+    <script src="globalauth.js"></script>
+</body>
+</html>

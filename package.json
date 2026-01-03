@@ -2,6 +2,7 @@
   "dependencies": {
     "express-rate-limit": "^8.2.1",
     "express-validator": "^7.3.0",
+    "nodemailer": "^7.0.12",
     "razorpay": "^2.9.6"
   }
 }

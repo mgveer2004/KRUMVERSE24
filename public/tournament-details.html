@@ -399,16 +399,34 @@
     <!-- SCRIPTS -->
     <script src="./config/api.js"></script>
     <script src="globalauth.js"></script>
-    <!-- New file added to include Firestore and Chat functions -->
-    <script type="module" src="tournament-details-script.js"></script> 
     
-    <!-- FIREBASE IMPORT (MUST BE HERE FOR CHAT) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase is now globally initialized and ready for use in tournament-details-script.js
+    <!-- 🚨 CRITICAL FIX: FIREBASE CONFIGURATION INJECTION -->
+    <script>
+        // Find these values in your Firebase Project Settings > General > Your apps (Web)
+        // **IMPORTANT**: You MUST replace these placeholder values with your actual Firebase configuration.
+        const FIREBASE_CONFIG = {
+            apiKey: "YOUR_API_KEY", 
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        const FIREBASE_APP_ID = FIREBASE_CONFIG.appId || "default-app-id";
+        
+        // Pass to script using window scope
+        window.__firebase_config = JSON.stringify(FIREBASE_CONFIG);
+        window.__firebase_app_id = FIREBASE_APP_ID;
+        window.__initial_auth_token = localStorage.getItem('token');
     </script>
+    
+    <!-- Load Firebase Modules (Must be before tournament-details-script.js) -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    
+    <!-- Load Tournament Logic & Chat Script -->
+    <script type="module" src="tournament-details-script.js"></script> 
+    <script src="config/api.js"></script>
 </body>
 </html>

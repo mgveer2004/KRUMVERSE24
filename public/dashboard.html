@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - KrumVerse</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dashboard-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #28283d;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+        .dashboard-container h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .dashboard-container p {
+            color: #bbb;
+            margin-bottom: 30px;
+        }
+        .dashboard-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .action-link {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .action-link:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <a href="index.html" class="navbar-logo">KrumVerse</a>
+        <div id="auth-container"></div>
+    </nav>
+    
+    <div class="dashboard-container">
+        <h1>📊 Your Dashboard</h1>
+        <p>This is your personalized area to manage tournaments, view stats, and access tools.</p>
+        
+        <div class="dashboard-actions">
+            <a href="profile.html" class="action-link">👤 View Profile</a>
+            <a href="organize-tournament.html" class="action-link">🏆 Create Tournament</a>
+            <a href="tournament.html" class="action-link">🎮 Join Tournaments</a>
+        </div>
+        
+        <p style="margin-top: 40px;">*Note: This feature is under active development. More data and tools coming soon!</p>
+    </div>
+
+    <script src="globalauth.js"></script>
+    <script src="config/api.js"></script>
+</body>
+</html>
